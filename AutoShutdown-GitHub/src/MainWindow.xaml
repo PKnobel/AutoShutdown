@@ -1,0 +1,404 @@
+<!-- Oberfläche von Auto-Shutdown im Windows-11-Stil (Fluent).
+     Farben (z. B. TextPrimary) und Texte (S.*) kommen als DynamicResource aus MainWindow.ApplyTheme() bzw. ApplyLanguage(). -->
+<Grid xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:local="clr-namespace:AutoShutdown;assembly=AutoShutdown">
+  <Grid.Resources>
+    <FontFamily x:Key="IconFont">Segoe Fluent Icons, Segoe MDL2 Assets</FontFamily>
+    <FontFamily x:Key="DisplayFont">Segoe UI Variable Display, Segoe UI</FontFamily>
+
+    <Style x:Key="FocusRing">
+      <Setter Property="Control.Template">
+        <Setter.Value>
+          <ControlTemplate>
+            <Border Margin="-3" CornerRadius="7" BorderThickness="2" BorderBrush="{DynamicResource TextPrimary}"/>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+    <Style x:Key="Card" TargetType="Border">
+      <Setter Property="Background" Value="{DynamicResource CardBg}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource CardStroke}"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="8"/>
+    </Style>
+
+    <Style x:Key="SectionHeader" TargetType="TextBlock">
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="Margin" Value="2,22,0,8"/>
+    </Style>
+
+    <Style x:Key="Secondary" TargetType="TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource TextSecondary}"/>
+    </Style>
+
+    <Style x:Key="Icon" TargetType="TextBlock">
+      <Setter Property="FontFamily" Value="{StaticResource IconFont}"/>
+      <Setter Property="FontSize" Value="16"/>
+      <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+
+    <!-- Standard-Button -->
+    <Style x:Key="StandardButton" TargetType="Button">
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
+      <Setter Property="Background" Value="{DynamicResource ControlBg}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource ControlStroke}"/>
+      <Setter Property="Padding" Value="12,5,12,6"/>
+      <Setter Property="MinHeight" Value="32"/>
+      <Setter Property="MinWidth" Value="76"/>
+      <Setter Property="FocusVisualStyle" Value="{StaticResource FocusRing}"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="1" CornerRadius="4" SnapsToDevicePixels="True">
+              <ContentPresenter x:Name="Cp" Margin="{TemplateBinding Padding}"
+                                HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsPressed" Value="True">
+                <Setter TargetName="Cp" Property="Opacity" Value="0.75"/>
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+      <Style.Triggers>
+        <Trigger Property="IsMouseOver" Value="True">
+          <Setter Property="Background" Value="{DynamicResource ControlBgHover}"/>
+        </Trigger>
+        <Trigger Property="IsPressed" Value="True">
+          <Setter Property="Background" Value="{DynamicResource ControlBgPressed}"/>
+        </Trigger>
+      </Style.Triggers>
+    </Style>
+
+    <!-- Akzent-Button (Hauptaktion) -->
+    <Style x:Key="AccentButton" TargetType="Button" BasedOn="{StaticResource StandardButton}">
+      <Setter Property="Foreground" Value="{DynamicResource TextOnAccent}"/>
+      <Setter Property="Background" Value="{DynamicResource Accent}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentStroke}"/>
+      <Style.Triggers>
+        <Trigger Property="IsMouseOver" Value="True">
+          <Setter Property="Background" Value="{DynamicResource AccentHover}"/>
+        </Trigger>
+        <Trigger Property="IsPressed" Value="True">
+          <Setter Property="Background" Value="{DynamicResource AccentPressed}"/>
+        </Trigger>
+      </Style.Triggers>
+    </Style>
+
+    <!-- Unauffälliger Button ohne Rahmen (obere Leiste) -->
+    <Style x:Key="SubtleButton" TargetType="Button" BasedOn="{StaticResource StandardButton}">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+      <Setter Property="MinWidth" Value="0"/>
+      <Setter Property="Padding" Value="10,5,10,6"/>
+      <Style.Triggers>
+        <Trigger Property="IsMouseOver" Value="True">
+          <Setter Property="Background" Value="{DynamicResource SubtleHover}"/>
+        </Trigger>
+        <Trigger Property="IsPressed" Value="True">
+          <Setter Property="Background" Value="{DynamicResource SubtlePressed}"/>
+        </Trigger>
+      </Style.Triggers>
+    </Style>
+
+    <!-- Segmente des Sprachumschalters -->
+    <Style x:Key="Segment" TargetType="Button" BasedOn="{StaticResource SubtleButton}">
+      <Setter Property="Foreground" Value="{DynamicResource TextSecondary}"/>
+      <Setter Property="MinWidth" Value="80"/>
+      <Setter Property="MinHeight" Value="28"/>
+      <Setter Property="Padding" Value="12,3,12,4"/>
+    </Style>
+
+    <Style x:Key="SegmentSelected" TargetType="Button" BasedOn="{StaticResource StandardButton}">
+      <Setter Property="Background" Value="{DynamicResource SegmentSelectedBg}"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="MinWidth" Value="80"/>
+      <Setter Property="MinHeight" Value="28"/>
+      <Setter Property="Padding" Value="12,3,12,4"/>
+      <Style.Triggers>
+        <Trigger Property="IsMouseOver" Value="True">
+          <Setter Property="Background" Value="{DynamicResource SegmentSelectedBg}"/>
+        </Trigger>
+        <Trigger Property="IsPressed" Value="True">
+          <Setter Property="Background" Value="{DynamicResource SegmentSelectedBg}"/>
+        </Trigger>
+      </Style.Triggers>
+    </Style>
+
+    <!-- Kachel für die Schnellwahl -->
+    <ControlTemplate x:Key="TileTemplate" TargetType="Button">
+      <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+              BorderThickness="1" CornerRadius="8" SnapsToDevicePixels="True">
+        <ContentPresenter x:Name="Cp" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+      </Border>
+      <ControlTemplate.Triggers>
+        <Trigger Property="IsPressed" Value="True">
+          <Setter TargetName="Cp" Property="Opacity" Value="0.75"/>
+        </Trigger>
+      </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <Style x:Key="TileButton" TargetType="Button" BasedOn="{StaticResource StandardButton}">
+      <Setter Property="Height" Value="84"/>
+      <Setter Property="Margin" Value="4,0"/>
+      <Setter Property="Background" Value="{DynamicResource CardBg}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource CardStroke}"/>
+      <Setter Property="Template" Value="{StaticResource TileTemplate}"/>
+    </Style>
+
+    <Style x:Key="TileButtonActive" TargetType="Button" BasedOn="{StaticResource TileButton}">
+      <Setter Property="Foreground" Value="{DynamicResource TextOnAccent}"/>
+      <Setter Property="Background" Value="{DynamicResource Accent}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentStroke}"/>
+      <Style.Triggers>
+        <Trigger Property="IsMouseOver" Value="True">
+          <Setter Property="Background" Value="{DynamicResource AccentHover}"/>
+        </Trigger>
+        <Trigger Property="IsPressed" Value="True">
+          <Setter Property="Background" Value="{DynamicResource AccentPressed}"/>
+        </Trigger>
+      </Style.Triggers>
+    </Style>
+
+    <!-- Pfeiltasten im Zahlenfeld -->
+    <Style x:Key="SpinButton" TargetType="RepeatButton">
+      <Setter Property="Width" Value="24"/>
+      <Setter Property="Height" Value="24"/>
+      <Setter Property="Focusable" Value="False"/>
+      <Setter Property="Delay" Value="400"/>
+      <Setter Property="Interval" Value="70"/>
+      <Setter Property="FontFamily" Value="{StaticResource IconFont}"/>
+      <Setter Property="FontSize" Value="10"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextSecondary}"/>
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="RepeatButton">
+            <Border Background="{TemplateBinding Background}" CornerRadius="4">
+              <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+      <Style.Triggers>
+        <Trigger Property="IsMouseOver" Value="True">
+          <Setter Property="Background" Value="{DynamicResource SubtleHover}"/>
+        </Trigger>
+        <Trigger Property="IsPressed" Value="True">
+          <Setter Property="Background" Value="{DynamicResource SubtlePressed}"/>
+        </Trigger>
+      </Style.Triggers>
+    </Style>
+  </Grid.Resources>
+
+  <!-- ===================== Hauptinhalt ===================== -->
+  <DockPanel x:Name="MainPanel">
+
+    <!-- Obere Leiste: Sprache und Info -->
+    <Grid DockPanel.Dock="Top" Margin="16,4,16,8">
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+        <TextBlock Style="{StaticResource Icon}" Text="&#xE774;" Foreground="{DynamicResource TextSecondary}" Margin="4,0,10,0"/>
+        <Border Background="{DynamicResource SubtleHover}" BorderBrush="{DynamicResource ControlStroke}"
+                BorderThickness="1" CornerRadius="6" Padding="2">
+          <StackPanel Orientation="Horizontal">
+            <Button x:Name="LangDe" Style="{StaticResource Segment}" Content="Deutsch"/>
+            <Button x:Name="LangEn" Style="{StaticResource Segment}" Content="English" Margin="2,0,0,0"/>
+          </StackPanel>
+        </Border>
+      </StackPanel>
+      <Button x:Name="AboutButton" Style="{StaticResource SubtleButton}" HorizontalAlignment="Right" VerticalAlignment="Center"
+              AutomationProperties.Name="{DynamicResource S.About}">
+        <StackPanel Orientation="Horizontal">
+          <TextBlock Style="{StaticResource Icon}" Text="&#xE946;" FontSize="14" Margin="0,1,8,0"/>
+          <TextBlock Text="{DynamicResource S.About}"/>
+        </StackPanel>
+      </Button>
+    </Grid>
+    <Border DockPanel.Dock="Top" Height="1" Background="{DynamicResource Divider}"/>
+
+    <StackPanel Margin="20,16,20,20" VerticalAlignment="Center">
+
+      <!-- Status: beide Ansichten liegen übereinander (Hidden statt Collapsed), damit die Höhe gleich bleibt -->
+      <Border Style="{StaticResource Card}" Padding="20,18">
+        <Grid>
+          <StackPanel x:Name="IdlePanel" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <Border Width="56" Height="56" CornerRadius="28" HorizontalAlignment="Center" Background="{DynamicResource AccentSubtle}">
+              <TextBlock Style="{StaticResource Icon}" Text="&#xE7E8;" FontSize="26" HorizontalAlignment="Center"
+                         Foreground="{DynamicResource AccentText}"/>
+            </Border>
+            <TextBlock Text="{DynamicResource S.IdleTitle}" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,14,0,0"/>
+            <TextBlock Style="{StaticResource Secondary}" Text="{DynamicResource S.IdleText}" TextWrapping="Wrap"
+                       TextAlignment="Center" Margin="0,2,0,0"/>
+          </StackPanel>
+
+          <StackPanel x:Name="ActivePanel" Visibility="Hidden">
+            <TextBlock Style="{StaticResource Secondary}" Text="{DynamicResource S.CountdownLabel}"/>
+            <TextBlock x:Name="CountdownText" Text="00:00:00" FontFamily="{StaticResource DisplayFont}" FontSize="52"
+                       FontWeight="SemiBold" Typography.NumeralAlignment="Tabular" Margin="-2,-6,0,-2"/>
+            <TextBlock x:Name="TargetText" Style="{StaticResource Secondary}" Text=""/>
+            <Grid x:Name="ProgressTrack" Height="4" Margin="0,16,0,0">
+              <Border CornerRadius="2" Background="{DynamicResource TrackBg}"/>
+              <Border x:Name="ProgressFill" CornerRadius="2" Background="{DynamicResource Accent}" HorizontalAlignment="Left" Width="0"/>
+            </Grid>
+            <Button x:Name="CancelButton" Style="{StaticResource StandardButton}" Margin="0,18,0,0" HorizontalAlignment="Stretch"
+                    AutomationProperties.Name="{DynamicResource S.Cancel}">
+              <StackPanel Orientation="Horizontal">
+                <TextBlock Style="{StaticResource Icon}" Text="&#xE711;" FontSize="12" Margin="0,1,10,0"/>
+                <TextBlock Text="{DynamicResource S.Cancel}"/>
+              </StackPanel>
+            </Button>
+          </StackPanel>
+        </Grid>
+      </Border>
+
+      <!-- Schnellwahl -->
+      <TextBlock Style="{StaticResource SectionHeader}" Text="{DynamicResource S.QuickPick}"/>
+      <UniformGrid Columns="4" Margin="-4,0">
+        <Button x:Name="Preset15" Style="{StaticResource TileButton}">
+          <StackPanel>
+            <TextBlock Text="15" FontFamily="{StaticResource DisplayFont}" FontSize="28" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+            <TextBlock Text="{DynamicResource S.Minutes}" FontSize="12" Opacity="0.75" HorizontalAlignment="Center" Margin="0,-2,0,0"/>
+          </StackPanel>
+        </Button>
+        <Button x:Name="Preset30" Style="{StaticResource TileButton}">
+          <StackPanel>
+            <TextBlock Text="30" FontFamily="{StaticResource DisplayFont}" FontSize="28" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+            <TextBlock Text="{DynamicResource S.Minutes}" FontSize="12" Opacity="0.75" HorizontalAlignment="Center" Margin="0,-2,0,0"/>
+          </StackPanel>
+        </Button>
+        <Button x:Name="Preset60" Style="{StaticResource TileButton}">
+          <StackPanel>
+            <TextBlock Text="1" FontFamily="{StaticResource DisplayFont}" FontSize="28" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+            <TextBlock Text="{DynamicResource S.Hour}" FontSize="12" Opacity="0.75" HorizontalAlignment="Center" Margin="0,-2,0,0"/>
+          </StackPanel>
+        </Button>
+        <Button x:Name="Preset120" Style="{StaticResource TileButton}">
+          <StackPanel>
+            <TextBlock Text="2" FontFamily="{StaticResource DisplayFont}" FontSize="28" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+            <TextBlock Text="{DynamicResource S.Hours}" FontSize="12" Opacity="0.75" HorizontalAlignment="Center" Margin="0,-2,0,0"/>
+          </StackPanel>
+        </Button>
+      </UniformGrid>
+
+      <!-- Eigene Zeit -->
+      <TextBlock Style="{StaticResource SectionHeader}" Text="{DynamicResource S.CustomTime}"/>
+      <Border Style="{StaticResource Card}">
+        <StackPanel>
+          <Grid Margin="16,12">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="Auto"/>
+              <ColumnDefinition Width="*"/>
+              <ColumnDefinition Width="Auto"/>
+              <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Style="{StaticResource Icon}" Text="&#xE916;" Margin="0,0,14,0"/>
+            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+              <TextBlock Text="{DynamicResource S.AfterDuration}"/>
+              <TextBlock Style="{StaticResource Secondary}" Text="{DynamicResource S.DurationHint}" FontSize="12"/>
+            </StackPanel>
+            <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+              <local:NumberBox x:Name="DurationHours" Max="99" Value="0"/>
+              <TextBlock Style="{StaticResource Secondary}" Text=":" VerticalAlignment="Center" Margin="5,0,5,2"/>
+              <local:NumberBox x:Name="DurationMinutes" Max="59" Wrap="True" Value="45"/>
+            </StackPanel>
+            <Button x:Name="StartDuration" Grid.Column="3" Style="{StaticResource AccentButton}" Content="{DynamicResource S.Start}" Margin="12,0,0,0"/>
+          </Grid>
+
+          <Border Height="1" Background="{DynamicResource Divider}"/>
+
+          <Grid Margin="16,12">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="Auto"/>
+              <ColumnDefinition Width="*"/>
+              <ColumnDefinition Width="Auto"/>
+              <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Style="{StaticResource Icon}" Text="&#xE823;" Margin="0,0,14,0"/>
+            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+              <TextBlock Text="{DynamicResource S.AtTime}"/>
+              <TextBlock Style="{StaticResource Secondary}" Text="{DynamicResource S.AtTimeHint}" FontSize="12"/>
+            </StackPanel>
+            <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+              <local:NumberBox x:Name="ClockHours" Max="23" Wrap="True"/>
+              <TextBlock Style="{StaticResource Secondary}" Text=":" VerticalAlignment="Center" Margin="5,0,5,2"/>
+              <local:NumberBox x:Name="ClockMinutes" Max="59" Wrap="True"/>
+            </StackPanel>
+            <Button x:Name="StartClock" Grid.Column="3" Style="{StaticResource AccentButton}" Content="{DynamicResource S.Start}" Margin="12,0,0,0"/>
+          </Grid>
+        </StackPanel>
+      </Border>
+
+      <!-- Hinweis -->
+      <StackPanel Orientation="Horizontal" Margin="2,16,0,0">
+        <TextBlock Style="{StaticResource Icon}" Text="&#xE7BA;" FontSize="12" Foreground="{DynamicResource TextSecondary}" Margin="0,1,8,0"/>
+        <TextBlock Style="{StaticResource Secondary}" FontSize="12" Text="{DynamicResource S.Warning}"/>
+      </StackPanel>
+    </StackPanel>
+  </DockPanel>
+
+  <!-- ===================== Dialog (wie ContentDialog in Windows 11) ===================== -->
+  <Grid x:Name="DialogLayer" Visibility="Collapsed" Background="{DynamicResource Smoke}"
+        KeyboardNavigation.TabNavigation="Cycle">
+    <Grid x:Name="DialogCard" MaxWidth="380" Margin="24" VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5">
+      <Border CornerRadius="8" Background="{DynamicResource DialogBg}">
+        <Border.Effect>
+          <DropShadowEffect BlurRadius="40" ShadowDepth="10" Direction="270" Opacity="0.3"/>
+        </Border.Effect>
+      </Border>
+      <Border CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource DialogStroke}" Background="{DynamicResource DialogBg}">
+        <StackPanel>
+          <StackPanel Margin="24">
+            <DockPanel>
+              <Border x:Name="DialogIcon" Visibility="Collapsed" Width="40" Height="40" CornerRadius="20" Margin="0,0,14,0"
+                      Background="{DynamicResource AccentSubtle}">
+                <TextBlock Style="{StaticResource Icon}" Text="&#xE7E8;" FontSize="18" HorizontalAlignment="Center"
+                           Foreground="{DynamicResource AccentText}"/>
+              </Border>
+              <TextBlock x:Name="DialogTitle" FontFamily="{StaticResource DisplayFont}" FontSize="20" FontWeight="SemiBold"
+                         TextWrapping="Wrap" VerticalAlignment="Center"/>
+            </DockPanel>
+            <TextBlock x:Name="DialogText" Margin="0,12,0,0" TextWrapping="Wrap" LineHeight="20"/>
+
+            <!-- Info-Inhalt -->
+            <StackPanel x:Name="AboutDetails" Visibility="Collapsed" Margin="0,14,0,0">
+              <TextBlock Style="{StaticResource Secondary}" Text="{DynamicResource S.AboutDescription}" TextWrapping="Wrap"/>
+              <Grid Margin="0,16,0,0">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="Auto"/>
+                  <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                  <RowDefinition/>
+                  <RowDefinition/>
+                  <RowDefinition/>
+                </Grid.RowDefinitions>
+                <TextBlock Style="{StaticResource Secondary}" Text="{DynamicResource S.Version}" Margin="0,0,24,6"/>
+                <TextBlock x:Name="AboutVersion" Grid.Column="1"/>
+                <TextBlock Grid.Row="1" Style="{StaticResource Secondary}" Text="{DynamicResource S.CreatedBy}" Margin="0,0,24,6"/>
+                <TextBlock x:Name="AboutAuthor" Grid.Row="1" Grid.Column="1"/>
+                <TextBlock Grid.Row="2" Style="{StaticResource Secondary}" Text="{DynamicResource S.License}" Margin="0,0,24,0"/>
+                <TextBlock Grid.Row="2" Grid.Column="1" Text="MIT"/>
+              </Grid>
+            </StackPanel>
+          </StackPanel>
+          <Border Background="{DynamicResource DialogFooterBg}" BorderBrush="{DynamicResource CardStroke}"
+                  BorderThickness="0,1,0,0" CornerRadius="0,0,7,7" Padding="24">
+            <Grid>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="8"/>
+                <ColumnDefinition/>
+              </Grid.ColumnDefinitions>
+              <Button x:Name="DialogPrimary" Style="{StaticResource AccentButton}"/>
+              <Button x:Name="DialogSecondary" Grid.Column="2" Style="{StaticResource StandardButton}"/>
+            </Grid>
+          </Border>
+        </StackPanel>
+      </Border>
+    </Grid>
+  </Grid>
+</Grid>
